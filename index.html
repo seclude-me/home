@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人网页</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #333;
+        }
+        header {
+            background-color: rgba(0, 0, 51, 0.8);
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        nav {
+            background-color: rgba(0, 0, 85, 0.8);
+            overflow: hidden;
+        }
+        nav a {
+            float: left;
+            display: block;
+            color: #fff;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+        }
+        nav a:hover {
+            background-color: rgba(0, 0, 111, 0.8);
+        }
+        .container {
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            margin: 20px auto;
+            max-width: 800px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .post {
+            background-color: #fff;
+            margin: 20px 0;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        .post .delete-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            display: none;
+        }
+        .edit-button, .add-button, .save-button {
+            display: none;
+            margin: 10px 0;
+        }
+        .editable {
+            border: 1px solid transparent;
+            padding: 5px;
+        }
+        .editable:focus {
+            outline: none;
+            border: 1px solid #000;
+        }
+        footer {
+            background-color: rgba(0, 0, 51, 0.8);
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+        }
+        .social-icons {
+            margin: 10px 0;
+        }
+        .social-icons a {
+            text-decoration: none;
+            color: #fff;
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>我的日志</h1>
+    </header>
+    <nav>
+        <a href="#home">首页</a>
+        <a href="#about">关于</a>
+        <a href="#contact">联系</a>
+    </nav>
+    <div class="container">
+        <button class="edit-button" onclick="enableEditMode()">编辑日志</button>
+        <button class="add-button" onclick="addNewPost()">添加日志</button>
+        <button class="save-button" onclick="saveLogs()">保存日志</button>
+        <div id="posts-container">
+            <div class="post">
+                <button class="delete-button" onclick="deletePost(this)">删除</button>
+                <h2 contenteditable="false" class="editable">日志标题1</h2>
+                <p contenteditable="false" class="editable">这是第一篇日志的内容...</p>
+            </div>
+            <div class="post">
+                <button class="delete-button" onclick="deletePost(this)">删除</button>
+                <h2 contenteditable="false" class="editable">日志标题2</h2>
+                <p contenteditable="false" class="editable">这是第二篇日志的内容...</p>
+            </div>
+        </div>
+    </div>
+    <!-- 评论区 -->
+    <div id="disqus_thread"></div>
+    <script>
+        (function() {
+            var d = document, s = d.createElement('script');
+            s.src = 'https://YOUR_DISQUS_SHORTNAME_HERE.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <footer>
+        <div class="social-icons">
+            <a href="#">Facebook</a>
+            <a href="#">Twitter</a>
+            <a href="#">LinkedIn</a>
+            <!-- 添加更多的社交媒体图标 -->
+        </div>
+        <p>© 2024 个人网页. 保留所有权利.</p>
+    </footer>
+
+    <!-- 音乐播放 -->
+    <audio id="background-music" loop autoplay>
+        <source src="M17.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <script>
+        const backgroundMusic = document.getElementById('background-music');
+        backgroundMusic.volume = 0.5; // 设置音量
+
+        function checkAdminMode() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('admin')) {
+                document.querySelector('.edit-button').style.display = 'block';
+                document.querySelector('.add-button').style.display = 'block';
+            }
+        }
+
+        function enableEditMode() {
+            const editables = document.querySelectorAll('.editable');
+            editables.forEach(element => {
+                element.contentEditable = true;
+            });
+            document.querySelectorAll('.delete-button').forEach(button => {
+                button.style.display = 'block';
+            });
+            document.querySelector('.edit-button').style.display = 'none';
+            document.querySelector('.save-button').style.display = 'block';
+        }
+
+        function saveLogs() {
+            const editables = document.querySelectorAll('.editable');
+            editables.forEach(element => {
+                element.contentEditable = false;
+            });
+            document.querySelectorAll('.delete-button').forEach(button => {
+                button.style.display = 'none';
+            });
+            document.querySelector('.save-button').style.display = 'none';
+            alert('日志已保存！');
+        }
+
+        function deletePost(button) {
+            const post = button.parentNode;
+            post.parentNode.removeChild(post);
+        }
+
+        function addNewPost() {
+            const postsContainer = document.getElementById('posts-container');
+            const newPost = document.createElement('div');
+            newPost.className = 'post';
+            newPost.innerHTML = `
+                <button class="delete-button" onclick="deletePost(this)">删除</button>
+                <h2 contenteditable="false" class="editable">新的日志标题</h2>
+                <p contenteditable="false" class="editable">这是新的日志内容...</p>
+            `;
+            postsContainer.appendChild(newPost);
+        }
+
+        window.onload = checkAdminMode;
+    </script>
+    <script id="dsq-count-scr" src="//YOUR_DISQUS_SHORTNAME_HERE.disqus.com/count.js" async></script>
+</body>
+</html>
